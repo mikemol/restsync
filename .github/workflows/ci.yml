@@ -36,7 +36,7 @@ jobs:
       - name: Policy check (workflows)
         run: .venv/bin/python scripts/policy_check.py --workflows
       - name: Docflow audit
-        run: .venv/bin/python -m gabion docflow-audit --root . --fail-on-violations
+        run: .venv/bin/python scripts/docflow_audit.py --root . --fail-on-violations
       - name: Check plan (read-only)
         env:
           RESTSYNC_TOKEN: ${{ secrets.GITHUB_TOKEN }}
