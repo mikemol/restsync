@@ -50,6 +50,7 @@ class RestsyncSpec:
     auth: AuthSpec
     desired: Dict[str, Any]
     endpoints: List[EndpointSpec]
+    overlay: Optional[str] = None
 
 
 def _load_yaml(path: Path) -> Dict[str, Any]:
@@ -99,6 +100,10 @@ def load_spec(path: Path) -> tuple[Optional[RestsyncSpec], List[str]]:
     version = _require_int(data.get("version"), "version", errors)
     provider = _require_str(data.get("provider"), "provider", errors)
     base_url = _require_str(data.get("base_url"), "base_url", errors)
+    overlay = data.get("overlay")
+    if overlay is not None and not isinstance(overlay, str):
+        errors.append("overlay must be a string path if provided")
+        overlay = None
 
     repo_raw = data.get("repo", {})
     if not isinstance(repo_raw, dict):
@@ -175,6 +180,7 @@ def load_spec(path: Path) -> tuple[Optional[RestsyncSpec], List[str]]:
             auth=auth,
             desired=desired,
             endpoints=endpoints,
+            overlay=overlay,
         ),
         [],
     )

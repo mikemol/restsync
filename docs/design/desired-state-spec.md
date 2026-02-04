@@ -1,5 +1,5 @@
 ---
-doc_revision: 1
+doc_revision: 2
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: design_desired_state_spec
 doc_role: design
@@ -45,6 +45,7 @@ canonicalization, drift detection, and overlay validation.
 ## 1. Scope
 
 - Config versioning and provider selection.
+- Overlay configuration path (optional, provider-specific overlay).
 - Repo identity and base URL.
 - Desired state for each endpoint.
 - Shape maps for comparison.

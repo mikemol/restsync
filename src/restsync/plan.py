@@ -9,6 +9,7 @@ from restsync.auth import get_token
 from restsync.canon import canonicalize
 from restsync.diff import diff_values
 from restsync.http import request_json
+from restsync.overlay import load_overlay, validate_plan
 from restsync.spec import EndpointSpec, RestsyncSpec, load_spec
 
 
@@ -45,7 +46,7 @@ def _desired_for_endpoint(spec: RestsyncSpec, endpoint: EndpointSpec) -> Dict[st
     return desired
 
 
-def build_plan(spec: RestsyncSpec, token: Optional[str]) -> Dict[str, Any]:
+def build_plan(spec: RestsyncSpec, token: Optional[str], overlay_path: Optional[Path]) -> Dict[str, Any]:
     endpoints = []
     for endpoint in sorted(spec.endpoints, key=lambda item: item.name):
         url = _format_url(spec, endpoint)
@@ -65,12 +66,33 @@ def build_plan(spec: RestsyncSpec, token: Optional[str]) -> Dict[str, Any]:
                 "apply": asdict(endpoint.apply) if endpoint.apply else None,
             }
         )
-    return {
+    plan: Dict[str, Any] = {
         "version": spec.version,
         "provider": spec.provider,
         "repo": asdict(spec.repo),
         "endpoints": endpoints,
     }
+    if overlay_path is not None:
+        overlay, errors = load_overlay(overlay_path)
+        if errors:
+            plan["overlay"] = {"name": None, "errors": errors, "violations": []}
+        elif overlay is not None:
+            violations = validate_plan(plan, overlay)
+            plan["overlay"] = {
+                "name": overlay.name,
+                "path": str(overlay_path),
+                "violations": violations,
+            }
+    return plan
+
+
+def _default_overlay_path(spec: RestsyncSpec, config_path: Path) -> Optional[Path]:
+    if spec.overlay:
+        return (config_path.parent / spec.overlay).resolve()
+    candidate = config_path.parent / "overlays" / f"{spec.provider}.yml"
+    if candidate.exists():
+        return candidate.resolve()
+    return None
 
 
 def plan_from_path(path: Path) -> Dict[str, Any]:
@@ -78,7 +100,8 @@ def plan_from_path(path: Path) -> Dict[str, Any]:
     if errors or spec is None:
         raise PlanError("invalid spec: " + "; ".join(errors))
     token = get_token(spec.auth)
-    return build_plan(spec, token)
+    overlay_path = _default_overlay_path(spec, path)
+    return build_plan(spec, token, overlay_path)
 
 
 def write_plan(plan: Dict[str, Any], output: Optional[Path]) -> None:

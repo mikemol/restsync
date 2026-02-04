@@ -1,5 +1,5 @@
 ---
-doc_revision: 1
+doc_revision: 2
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: impl_desired_state_spec
 doc_role: implementation
@@ -48,8 +48,8 @@ loader emits a normalized in-memory structure to drive plan generation.
 
 ## 2. Data Shapes and Structures
 
-- Top-level keys: `version`, `provider`, `repo`, `base_url`, `auth`, `desired`,
-  `endpoints`.
+- Top-level keys: `version`, `provider`, `overlay` (optional), `repo`, `base_url`,
+  `auth`, `desired`, `endpoints`.
 - Endpoints: `name`, `method`, `url`, `compare`, `apply`.
 
 ## 3. Algorithms and Edge Cases
