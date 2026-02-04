@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "restsync"
+version = "0.0.0"
+description = "Rsync for REST: desired-state sync with semantic overlays."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+
+[project.optional-dependencies]
+dev = [
+  "gabion",
+  "pyyaml",
+  "pytest",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["restsync"]
