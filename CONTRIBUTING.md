@@ -1,5 +1,5 @@
 ---
-doc_revision: 17
+doc_revision: 18
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 17
+  README.md: 18
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -100,6 +100,7 @@ Bootstrap everything:
 ```
 scripts/bootstrap.sh
 ```
+Bootstrap creates a repo-local `.venv` and installs dev dependencies there.
 
 ## Checks
 Run policy checks:
