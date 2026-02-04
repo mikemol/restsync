@@ -1,5 +1,5 @@
 ---
-doc_revision: 3
+doc_revision: 4
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: readme
 doc_role: readme
@@ -18,7 +18,7 @@ doc_reviewed_as_of:
   POLICY_SEED.md: 1
   glossary.md: 1
   AGENTS.md: 1
-  CONTRIBUTING.md: 3
+  CONTRIBUTING.md: 4
 doc_change_protocol: "POLICY_SEED.md §6"
 doc_erasure:
   - formatting
@@ -71,6 +71,11 @@ mise exec -- python -m gabion docflow-audit --root . --fail-on-violations
 Validate config:
 ```
 restsync spec-check --config configs/restsync.yml
+```
+
+Generate a read-only plan:
+```
+restsync plan --config configs/restsync.yml
 ```
 
 Run tests:
