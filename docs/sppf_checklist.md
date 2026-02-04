@@ -1,5 +1,5 @@
 ---
-doc_revision: 1
+doc_revision: 3
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: convergence_checklist
 doc_role: checklist
@@ -24,20 +24,25 @@ This checklist tracks concept nodes derived from `in/` and their adoption into
 
 Legend: [x] done · [ ] planned · [~] partial/heuristic
 
+Feature tagging: new checklist lines should declare either `[green]` or
+`[entailed: <feature_id>]` to capture entailment without splitting the feature
+taxonomy.
+
 ## Core engine
-- [ ] Canonical snapshot pipeline (fetch -> normalize -> snapshot).
-- [ ] Shape-map projection (include/ignore/sort).
-- [ ] Deterministic diff (symmetric difference).
+- [ ] Core sync pipeline (fetch -> canonicalize -> diff -> plan). [green] (core_sync_pipeline)
+- [ ] Canonical snapshot pipeline (fetch -> normalize -> snapshot). [entailed: core_sync_pipeline] (core_canonical_snapshot)
+- [ ] Shape-map projection (include/ignore/sort). [entailed: core_sync_pipeline] (core_shape_map)
+- [ ] Deterministic diff (symmetric difference). [entailed: core_sync_pipeline] (core_deterministic_diff)
 
 ## Safety and apply
-- [ ] Plan format (stable JSON schema).
-- [ ] Apply gate (explicit local confirmation).
-- [ ] Overlay refusal rules for unsafe plans.
+- [ ] Plan format (stable JSON schema). [entailed: core_sync_pipeline] (plan_schema)
+- [ ] Apply gate (explicit local confirmation). [entailed: core_sync_pipeline] (apply_gate)
+- [ ] Overlay refusal rules for unsafe plans. [entailed: overlay_model] (overlay_refusal_rules)
 
 ## Overlay model
-- [ ] Overlay interface and validation.
-- [ ] GitHub overlay prototype (branch protections, actions settings).
+- [ ] Overlay model and validation. [green] (overlay_model)
+- [ ] GitHub overlay prototype (branch protections, actions settings). [entailed: overlay_model] (github_overlay)
 
 ## Tooling
-- [ ] Policy checks enforced in CI.
-- [ ] Docflow audit enforced in CI.
+- [ ] Policy checks enforced in CI. [green] (tooling_policy_ci)
+- [ ] Docflow audit enforced in CI. [green] (tooling_docflow_ci)

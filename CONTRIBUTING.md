@@ -1,5 +1,5 @@
 ---
-doc_revision: 1
+doc_revision: 2
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -75,6 +75,15 @@ invoke scripts rather than embed long inline logic.
 - Bump `doc_revision` for conceptual changes.
 - Update `doc_reviewed_as_of` for dependency convergence.
 - Manual convergence is deliberate friction; missing bumps signal missing review.
+
+## Feature documentation
+- **Design docs:** `docs/design/<feature>.md` (use `docs/design/_template.md`).
+- **Implementation notes:** `docs/impl/<feature>.md` (use `docs/impl/_template.md`).
+- Every feature is tagged as **green** or **entailed** via front-matter:
+  - `feature_kind: green` for independent features.
+  - `feature_kind: entailed` with `entailed_by: [parent_feature_id]` for
+    features necessitated by others.
+- Track each feature in `docs/sppf_checklist.md` and link to its GH issue ID.
 
 ## Development setup
 Install toolchain (via `mise`):
