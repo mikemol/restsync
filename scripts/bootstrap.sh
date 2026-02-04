@@ -11,6 +11,6 @@ fi
 mise install
 mise exec -- python -m venv "${repo_root}/.venv"
 "${repo_root}/.venv/bin/python" -m pip install --upgrade pip
-"${repo_root}/.venv/bin/python" -m pip install -e "${repo_root}.[dev]"
+"${repo_root}/.venv/bin/python" -m pip install -e "${repo_root}[dev]"
 
 echo "Bootstrap complete. Activate with: source ${repo_root}/.venv/bin/activate"

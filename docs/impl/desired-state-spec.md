@@ -1,5 +1,5 @@
 ---
-doc_revision: 3
+doc_revision: 4
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: impl_desired_state_spec
 doc_role: implementation
@@ -59,6 +59,7 @@ loader emits a normalized in-memory structure to drive plan generation.
 - Normalize HTTP method casing.
 - Treat `allow_not_found` (404) as empty for plan/snapshot.
 - Apply `compare.ignore` at all depths to drop volatile keys.
+- Apply `compare.unwrap_enabled` to coerce `{enabled: bool}` objects into booleans.
 
 ## 4. Integration Points
 

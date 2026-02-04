@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: write
 
 jobs:
@@ -14,18 +15,14 @@ jobs:
     env:
       MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
     steps:
-      # Allow-listed actions: actions/checkout, jdx/mise-action
+      # Allow-listed actions: actions/checkout
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
-      - name: Install mise
-        uses: jdx/mise-action@6d1e696aa24c1aa1bcc1adea0212707c71ab78a8
-      - name: Install toolchain
-        run: mise install
       - name: Create venv
         run: |
-          mise exec -- python -m venv .venv
+          python3 -m venv .venv
           echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
           echo "$PWD/.venv/bin" >> $GITHUB_PATH
       - name: Install dependencies
@@ -34,9 +31,14 @@ jobs:
           .venv/bin/python -m pip install -e .
       - name: Update badge JSON
         env:
-          RESTSYNC_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RESTSYNC_TOKEN: ${{ secrets.RESTSYNC_TOKEN }}
           RESTSYNC_BIN: ${{ github.workspace }}/.venv/bin/restsync
-        run: scripts/update_badges.sh
+        run: |
+          if [ -z "${RESTSYNC_TOKEN:-}" ]; then
+            echo "RESTSYNC_TOKEN not set; skipping badge update."
+            exit 0
+          fi
+          scripts/update_badges.sh
       - name: Commit badge update
         run: |
           if git diff --quiet -- docs/badges/plan-health.json; then

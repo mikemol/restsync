@@ -60,6 +60,137 @@ def _violation(code: str, message: str, endpoint: Optional[str] = None) -> Dict[
     return payload
 
 
+def _expect_want_mapping(
+    want: Any, endpoint: str, code: str, message: str, violations: List[Dict[str, Any]]
+) -> Optional[Dict[str, Any]]:
+    if not isinstance(want, dict):
+        violations.append(_violation(code, message, endpoint=endpoint))
+        return None
+    return want
+
+
+def _expect_enabled_toggle(
+    want: Dict[str, Any],
+    key: str,
+    expected: bool,
+    endpoint: str,
+    code: str,
+    violations: List[Dict[str, Any]],
+) -> None:
+    value = want.get(key)
+    if isinstance(value, dict):
+        enabled = value.get("enabled")
+        if enabled is expected:
+            return
+        violations.append(_violation(code, f"{key}.enabled must be {expected}", endpoint=endpoint))
+        return
+    if isinstance(value, bool):
+        if value is expected:
+            return
+        violations.append(_violation(code, f"{key} must be {expected}", endpoint=endpoint))
+        return
+    violations.append(
+        _violation(
+            code,
+            f"{key} must be {expected} or a mapping with enabled={expected}",
+            endpoint=endpoint,
+        )
+    )
+
+
+def _validate_branch_protection(
+    plan: Dict[str, Any],
+    endpoint_name: str,
+    branch_label: str,
+    *,
+    expected_status_checks: Optional[List[str]],
+    expected_toggles: Dict[str, bool],
+    violations: List[Dict[str, Any]],
+) -> None:
+    endpoint_label = str(endpoint_name)
+    endpoint = _find_endpoint(plan, endpoint_name)
+    if endpoint is None:
+        violations.append(
+            _violation(
+                f"github.branch.{branch_label}.missing",
+                f"missing {endpoint_name} endpoint",
+                endpoint=endpoint_label,
+            )
+        )
+        return
+    want = _expect_want_mapping(
+        endpoint.get("want"),
+        endpoint_label,
+        f"github.branch.{branch_label}.want_mapping",
+        f"{endpoint_name} want must be a mapping",
+        violations,
+    )
+    if want is None:
+        return
+
+    status_checks = want.get("required_status_checks", "__missing__")
+    if expected_status_checks is None:
+        if status_checks is not None:
+            violations.append(
+                    _violation(
+                        f"github.branch.{branch_label}.required_status_checks",
+                        "required_status_checks must be null",
+                        endpoint=endpoint_label,
+                    )
+                )
+    else:
+        if not isinstance(status_checks, dict):
+            violations.append(
+                _violation(
+                    f"github.branch.{branch_label}.required_status_checks",
+                    "required_status_checks must be a mapping",
+                    endpoint=endpoint_label,
+                )
+            )
+        else:
+            if status_checks.get("strict") is not True:
+                violations.append(
+                    _violation(
+                        f"github.branch.{branch_label}.required_status_checks_strict",
+                        "required_status_checks.strict must be true",
+                        endpoint=endpoint_label,
+                    )
+                )
+            contexts = status_checks.get("contexts")
+            if not isinstance(contexts, list):
+                violations.append(
+                    _violation(
+                        f"github.branch.{branch_label}.required_status_checks_contexts",
+                        "required_status_checks.contexts must be a list",
+                        endpoint=endpoint_label,
+                    )
+                )
+            else:
+                expected = set(expected_status_checks)
+                actual = set(contexts)
+                if actual != expected:
+                    missing = sorted(expected - actual)
+                    extra = sorted(actual - expected)
+                    violations.append(
+                        _violation(
+                            f"github.branch.{branch_label}.required_status_checks_contexts",
+                            "required_status_checks.contexts must match expected set"
+                            f" (missing: {missing}, extra: {extra})",
+                            endpoint=endpoint_label,
+                        )
+                    )
+
+    for key, expected in expected_toggles.items():
+        _expect_enabled_toggle(
+            want,
+            key,
+            expected,
+            endpoint_label,
+            f"github.branch.{branch_label}.{key}",
+            violations,
+        )
+
+
 def validate_plan(plan: Dict[str, Any], overlay: OverlayConfig) -> List[Dict[str, Any]]:
     if overlay.name != "github":
         return [_violation("overlay.unknown", f"unsupported overlay: {overlay.name}")]
@@ -150,5 +281,45 @@ def validate_plan(plan: Dict[str, Any], overlay: OverlayConfig) -> List[Dict[str
                     endpoint="workflow_permissions",
                 )
             )
+
+    main_toggles = {
+        "required_signatures": False,
+        "enforce_admins": True,
+        "required_linear_history": False,
+        "allow_force_pushes": False,
+        "allow_deletions": False,
+        "block_creations": False,
+        "required_conversation_resolution": True,
+        "lock_branch": False,
+        "allow_fork_syncing": False,
+    }
+    _validate_branch_protection(
+        plan,
+        "branch_main_protection",
+        "main",
+        expected_status_checks=["audit", "dataflow-grammar"],
+        expected_toggles=main_toggles,
+        violations=violations,
+    )
+
+    stage_toggles = {
+        "required_signatures": False,
+        "enforce_admins": False,
+        "required_linear_history": False,
+        "allow_force_pushes": False,
+        "allow_deletions": False,
+        "block_creations": False,
+        "required_conversation_resolution": True,
+        "lock_branch": False,
+        "allow_fork_syncing": False,
+    }
+    _validate_branch_protection(
+        plan,
+        "branch_stage_protection",
+        "stage",
+        expected_status_checks=None,
+        expected_toggles=stage_toggles,
+        violations=violations,
+    )
 
     return violations

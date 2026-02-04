@@ -18,3 +18,5 @@ def test_load_spec_from_repo_config():
         "selected_actions",
         "workflow_permissions",
     }
+    branch_main = next(e for e in spec.endpoints if e.name == "branch_main_protection")
+    assert "required_signatures" in branch_main.compare.unwrap_enabled

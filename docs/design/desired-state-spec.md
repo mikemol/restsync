@@ -1,5 +1,5 @@
 ---
-doc_revision: 3
+doc_revision: 4
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: design_desired_state_spec
 doc_role: design
@@ -66,6 +66,7 @@ Out of scope:
 - Missing values are not equivalent to explicit null unless stated.
 - Shape map projection is explicit; no implicit ignores.
 - `compare.ignore` applies at all depths to drop volatile keys (e.g., `url`).
+- `compare.unwrap_enabled` coerces `{enabled: bool}` fields to booleans in canonical form.
 - Endpoints may set `allow_not_found` to treat 404 responses as empty objects.
 
 ## 4. Plan/Apply Semantics
