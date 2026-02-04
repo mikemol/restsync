@@ -9,13 +9,18 @@ description = "Rsync for REST: desired-state sync with semantic overlays."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
+dependencies = [
+  "pyyaml",
+]
 
 [project.optional-dependencies]
 dev = [
   "gabion",
-  "pyyaml",
   "pytest",
 ]
+
+[project.scripts]
+restsync = "restsync.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

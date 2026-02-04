@@ -1,5 +1,5 @@
 ---
-doc_revision: 3
+doc_revision: 4
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: convergence_checklist
 doc_role: checklist
@@ -33,6 +33,7 @@ taxonomy.
 - [ ] Canonical snapshot pipeline (fetch -> normalize -> snapshot). [entailed: core_sync_pipeline] (core_canonical_snapshot)
 - [ ] Shape-map projection (include/ignore/sort). [entailed: core_sync_pipeline] (core_shape_map)
 - [ ] Deterministic diff (symmetric difference). [entailed: core_sync_pipeline] (core_deterministic_diff)
+- [ ] Desired-state spec (YAML schema + validation). [entailed: core_sync_pipeline] (desired_state_spec)
 
 ## Safety and apply
 - [ ] Plan format (stable JSON schema). [entailed: core_sync_pipeline] (plan_schema)
@@ -42,6 +43,9 @@ taxonomy.
 ## Overlay model
 - [ ] Overlay model and validation. [green] (overlay_model)
 - [ ] GitHub overlay prototype (branch protections, actions settings). [entailed: overlay_model] (github_overlay)
+- [ ] GitHub actions settings parity. [entailed: github_overlay] (github_actions_settings)
+- [ ] GitHub branch rulesets parity. [entailed: github_overlay] (github_branch_rulesets)
+- [ ] GitHub tag rulesets parity. [entailed: github_overlay] (github_tag_rulesets)
 
 ## Tooling
 - [ ] Policy checks enforced in CI. [green] (tooling_policy_ci)

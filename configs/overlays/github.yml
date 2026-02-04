@@ -1,0 +1,17 @@
+overlay: github
+allow_list: docs/allowed_actions.txt
+
+branches:
+  trusted:
+    - main
+    - stage
+    - next
+    - release
+  automation_only:
+    - next
+    - release
+
+rulesets:
+  tags:
+    release: v*
+    test: test-v*

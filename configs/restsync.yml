@@ -1,0 +1,49 @@
+version: 1
+provider: github
+repo:
+  owner: mikemol
+  name: restsync
+base_url: https://api.github.com
+auth:
+  mode: gh
+
+desired:
+  actions_permissions:
+    allowed_actions: selected
+    default_workflow_permissions: read
+    can_approve_pull_request_reviews: false
+    selected_actions: []
+  workflow_permissions:
+    default_workflow_permissions: read
+    can_approve_pull_request_reviews: false
+
+endpoints:
+  - name: actions_permissions
+    method: GET
+    url: /repos/{owner}/{repo}/actions/permissions
+    compare:
+      include:
+        - allowed_actions
+        - default_workflow_permissions
+        - can_approve_pull_request_reviews
+        - selected_actions
+      ignore:
+        - url
+    apply:
+      method: PUT
+      url: /repos/{owner}/{repo}/actions/permissions
+      body_from: desired.actions_permissions
+
+  - name: workflow_permissions
+    method: GET
+    url: /repos/{owner}/{repo}/actions/permissions/workflow
+    compare:
+      include:
+        - default_workflow_permissions
+        - can_approve_pull_request_reviews
+      ignore:
+        - url
+    apply:
+      method: PUT
+      url: /repos/{owner}/{repo}/actions/permissions/workflow
+      body_from: desired.workflow_permissions

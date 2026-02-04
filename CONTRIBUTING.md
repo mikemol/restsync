@@ -1,5 +1,5 @@
 ---
-doc_revision: 2
+doc_revision: 3
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 2
+  README.md: 3
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -110,6 +110,11 @@ mise exec -- python scripts/policy_check.py --workflows
 Run docflow audit:
 ```
 mise exec -- python -m gabion docflow-audit --root . --fail-on-violations
+```
+
+Validate config:
+```
+restsync spec-check --config configs/restsync.yml
 ```
 
 Run all checks (policy + docflow + tests):
