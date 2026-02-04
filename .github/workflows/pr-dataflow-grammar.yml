@@ -1,0 +1,175 @@
+name: pr-dataflow-grammar
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  dataflow-grammar:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+    env:
+      MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
+    steps:
+      # Allow-listed actions: actions/checkout, jdx/mise-action, actions/upload-artifact
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Install mise
+        uses: jdx/mise-action@6d1e696aa24c1aa1bcc1adea0212707c71ab78a8
+      - name: Install toolchain
+        run: mise install
+      - name: Create venv
+        run: |
+          mise exec -- python -m venv .venv
+          echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+      - name: Verify stage CI succeeded for this SHA
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.request
+
+          token = os.environ["GITHUB_TOKEN"]
+          repo = os.environ["REPO"]
+          sha = os.environ["SHA"]
+          deadline = time.time() + 20 * 60
+          url = (
+              f"https://api.github.com/repos/{repo}/actions/workflows/ci.yml/runs"
+              f"?branch=stage&per_page=50"
+          )
+
+          while True:
+              req = urllib.request.Request(
+                  url,
+                  headers={
+                      "Authorization": f"Bearer {token}",
+                      "Accept": "application/vnd.github+json",
+                  },
+              )
+              with urllib.request.urlopen(req) as resp:
+                  payload = json.loads(resp.read().decode("utf-8"))
+
+              runs = payload.get("workflow_runs", [])
+              match = next((r for r in runs if r.get("head_sha") == sha), None)
+              if match is None:
+                  if time.time() > deadline:
+                      raise SystemExit(
+                          f"Stage CI has not run for {sha}. Push to stage and wait for CI."
+                      )
+                  time.sleep(15)
+                  continue
+
+              status = match.get("status")
+              if status != "completed":
+                  if time.time() > deadline:
+                      raise SystemExit(
+                          f"Stage CI for {sha} not complete (status={status})."
+                      )
+                  time.sleep(15)
+                  continue
+
+              conclusion = match.get("conclusion")
+              if conclusion != "success":
+                  raise SystemExit(
+                      f"Stage CI for {sha} not successful (conclusion={conclusion})."
+                  )
+              print(f"Stage CI OK for {sha}.")
+              break
+          PY
+      - name: Install package
+        run: .venv/bin/python -m pip install -e .
+      - name: Render dataflow grammar report
+        run: |
+          mkdir -p artifacts/dataflow_grammar
+          .venv/bin/python -m gabion dataflow-audit . \
+            --root . \
+            --report artifacts/dataflow_grammar/report.md
+      - name: Upload dataflow artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dataflow-grammar
+          path: artifacts/dataflow_grammar
+      - name: Comment on PR with report
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import urllib.request
+
+          token = os.environ["GITHUB_TOKEN"]
+          repo = os.environ["REPO"]
+          issue = os.environ["PR_NUMBER"]
+          run_url = os.environ["RUN_URL"]
+          marker = "<!-- dataflow-grammar -->"
+          report_path = pathlib.Path("artifacts/dataflow_grammar/report.md")
+          if report_path.exists():
+              report = report_path.read_text()
+          else:
+              report = f"{marker}\nDataflow grammar report generated.\n"
+          if marker not in report:
+              report = f"{marker}\n{report}"
+          footer = f"\n\n- Artifact: dataflow-grammar\n- Download: {run_url}\n"
+          body = report + footer
+          if len(body) > 60000:
+              body = body[:60000] + "\n\n(truncated)\n" + footer
+
+          def request(url, method="GET", payload=None):
+              data = None if payload is None else json.dumps(payload).encode("utf-8")
+              req = urllib.request.Request(
+                  url,
+                  data=data,
+                  headers={
+                      "Authorization": f"Bearer {token}",
+                      "Accept": "application/vnd.github+json",
+                      "Content-Type": "application/json",
+                  },
+                  method=method,
+              )
+              with urllib.request.urlopen(req) as resp:
+                  return json.loads(resp.read().decode("utf-8"))
+
+          comments = []
+          page = 1
+          while True:
+              url = (
+                  f"https://api.github.com/repos/{repo}/issues/{issue}/comments"
+                  f"?per_page=100&page={page}"
+              )
+              batch = request(url)
+              if not batch:
+                  break
+              comments.extend(batch)
+              page += 1
+
+          existing = next(
+              (c for c in comments if marker in (c.get("body") or "")),
+              None,
+          )
+          if existing:
+              request(existing["url"], method="PATCH", payload={"body": body})
+          else:
+              url = f"https://api.github.com/repos/{repo}/issues/{issue}/comments"
+              request(url, method="POST", payload={"body": body})
+          PY

@@ -29,6 +29,7 @@ desired:
       strict: true
       contexts:
         - audit
+        - dataflow-grammar
     required_signatures:
       enabled: false
     enforce_admins:
