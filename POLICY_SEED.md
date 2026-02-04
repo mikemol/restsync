@@ -20,8 +20,8 @@ doc_requires:
   - docs/publishing_practices.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 8
-  CONTRIBUTING.md: 8
+  README.md: 9
+  CONTRIBUTING.md: 9
   AGENTS.md: 1
   glossary.md: 1
   docs/publishing_practices.md: 1

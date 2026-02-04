@@ -7,6 +7,7 @@ import sys
 from restsync.apply import apply_plan, ApplyError
 from restsync.auth import get_token
 from restsync.plan import plan_from_path, write_plan, PlanError
+from restsync.summary import summarize_plan
 from restsync.spec import load_spec
 from restsync.spec import load_spec
 
@@ -30,6 +31,7 @@ def _cmd_plan(args: argparse.Namespace) -> int:
         return 2
     output = Path(args.output) if args.output else None
     write_plan(plan, output)
+    print(summarize_plan(plan))
     return 0
 
 
@@ -41,6 +43,7 @@ def _cmd_check(args: argparse.Namespace) -> int:
         return 2
     output = Path(args.output) if args.output else None
     write_plan(plan, output)
+    print(summarize_plan(plan))
     overlay = plan.get("overlay") or {}
     violations = overlay.get("violations") or []
     errors = overlay.get("errors") or []
@@ -75,6 +78,7 @@ def _cmd_apply(args: argparse.Namespace) -> int:
         return 2
     output = Path(args.output) if args.output else None
     write_plan(plan, output)
+    print(summarize_plan(plan))
     try:
         applied = apply_plan(plan, token, confirm=args.confirm)
     except ApplyError as exc:

@@ -1,5 +1,5 @@
 ---
-doc_revision: 8
+doc_revision: 9
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 8
+  README.md: 9
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -128,6 +128,8 @@ Validate plan and fail on overlay violations:
 ```
 restsync check --config configs/restsync.yml --output artifacts/plan_runs/plan.json
 ```
+
+Plan/check output includes a short human-readable summary.
 
 Apply changes (local only, requires explicit confirmation):
 ```
