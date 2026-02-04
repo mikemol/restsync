@@ -4,7 +4,10 @@ import argparse
 from pathlib import Path
 import sys
 
+from restsync.apply import apply_plan, ApplyError
+from restsync.auth import get_token
 from restsync.plan import plan_from_path, write_plan, PlanError
+from restsync.spec import load_spec
 from restsync.spec import load_spec
 
 
@@ -57,6 +60,33 @@ def _cmd_check(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_apply(args: argparse.Namespace) -> int:
+    config_path = Path(args.config)
+    spec, errors = load_spec(config_path)
+    if errors or spec is None:
+        for err in errors:
+            print(f"apply: {err}", file=sys.stderr)
+        return 2
+    token = get_token(spec.auth)
+    try:
+        plan = plan_from_path(config_path)
+    except PlanError as exc:
+        print(f"apply: {exc}", file=sys.stderr)
+        return 2
+    output = Path(args.output) if args.output else None
+    write_plan(plan, output)
+    try:
+        applied = apply_plan(plan, token, confirm=args.confirm)
+    except ApplyError as exc:
+        print(f"apply: {exc}", file=sys.stderr)
+        return 3
+    if applied:
+        print(f"apply: updated {', '.join(applied)}")
+    else:
+        print("apply: no changes")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     config_parent = argparse.ArgumentParser(add_help=False)
     config_parent.add_argument(
@@ -96,6 +126,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write plan JSON to a file instead of stdout",
     )
     check.set_defaults(func=_cmd_check)
+
+    apply = sub.add_parser(
+        "apply",
+        help="Apply the desired state (requires --confirm)",
+        parents=[config_parent],
+    )
+    apply.add_argument(
+        "--confirm",
+        action="store_true",
+        help="Confirm that you want to apply changes",
+    )
+    apply.add_argument(
+        "--output",
+        help="Write plan JSON to a file instead of stdout",
+    )
+    apply.set_defaults(func=_cmd_apply)
 
     return parser
 

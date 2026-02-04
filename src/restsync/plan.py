@@ -17,8 +17,8 @@ class PlanError(RuntimeError):
     pass
 
 
-def _format_url(spec: RestsyncSpec, endpoint: EndpointSpec) -> str:
-    return f"{spec.base_url}{endpoint.url.format(owner=spec.repo.owner, repo=spec.repo.name)}"
+def _format_url(spec: RestsyncSpec, template: str) -> str:
+    return f"{spec.base_url}{template.format(owner=spec.repo.owner, repo=spec.repo.name)}"
 
 
 def _resolve_path(root: Dict[str, Any], path: str) -> Any:
@@ -49,12 +49,17 @@ def _desired_for_endpoint(spec: RestsyncSpec, endpoint: EndpointSpec) -> Dict[st
 def build_plan(spec: RestsyncSpec, token: Optional[str], overlay_path: Optional[Path]) -> Dict[str, Any]:
     endpoints = []
     for endpoint in sorted(spec.endpoints, key=lambda item: item.name):
-        url = _format_url(spec, endpoint)
+        url = _format_url(spec, endpoint.url)
         live = request_json(endpoint.method, url, token)
         desired = _desired_for_endpoint(spec, endpoint)
         want = canonicalize(desired, endpoint.compare)
         have = canonicalize(live, endpoint.compare)
         drift = diff_values(want, have)
+        apply_url = None
+        apply_body = None
+        if endpoint.apply is not None:
+            apply_url = _format_url(spec, endpoint.apply.url)
+            apply_body = _resolve_path({"desired": spec.desired}, endpoint.apply.body_from)
         endpoints.append(
             {
                 "name": endpoint.name,
@@ -64,11 +69,14 @@ def build_plan(spec: RestsyncSpec, token: Optional[str], overlay_path: Optional[
                 "have": have,
                 "drift": drift,
                 "apply": asdict(endpoint.apply) if endpoint.apply else None,
+                "apply_url": apply_url,
+                "apply_body": apply_body,
             }
         )
     plan: Dict[str, Any] = {
         "version": spec.version,
         "provider": spec.provider,
+        "base_url": spec.base_url,
         "repo": asdict(spec.repo),
         "endpoints": endpoints,
     }

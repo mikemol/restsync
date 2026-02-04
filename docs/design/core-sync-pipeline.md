@@ -15,8 +15,8 @@ doc_requires:
   - POLICY_SEED.md
   - glossary.md
 doc_reviewed_as_of:
-  README.md: 7
-  CONTRIBUTING.md: 7
+  README.md: 8
+  CONTRIBUTING.md: 8
   POLICY_SEED.md: 1
   glossary.md: 1
 doc_change_protocol: "POLICY_SEED.md §6"
@@ -67,7 +67,7 @@ canonicalized; ordering and irrelevant fields are erased.
 ## 4. Plan/Apply Semantics
 
 - Plan must be deterministic and fully derived from canonical inputs.
-- Apply is gated, local, and explicit. CI never writes.
+- Apply is gated, local, and explicit (`restsync apply --confirm`). CI never writes.
 - Plan must include enough context to justify overlay refusals.
 
 ## 5. API/Endpoint Surface

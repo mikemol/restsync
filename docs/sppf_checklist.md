@@ -37,7 +37,7 @@ taxonomy.
 
 ## Safety and apply
 - [ ] Plan format (stable JSON schema). [entailed: core_sync_pipeline] (plan_schema)
-- [ ] Apply gate (explicit local confirmation). [entailed: core_sync_pipeline] (apply_gate)
+- [x] Apply gate (explicit local confirmation). [entailed: core_sync_pipeline] (apply_gate)
 - [ ] Overlay refusal rules for unsafe plans. [entailed: overlay_model] (overlay_refusal_rules)
 
 ## Overlay model

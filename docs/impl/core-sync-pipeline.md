@@ -15,8 +15,8 @@ doc_requires:
   - POLICY_SEED.md
   - glossary.md
 doc_reviewed_as_of:
-  README.md: 7
-  CONTRIBUTING.md: 7
+  README.md: 8
+  CONTRIBUTING.md: 8
   POLICY_SEED.md: 1
   glossary.md: 1
 doc_change_protocol: "POLICY_SEED.md §6"
@@ -64,6 +64,7 @@ pipeline is REST-agnostic and delegates semantics to overlays.
 
 - CLI commands: `snapshot`, `plan`, `apply`.
 - Overlay hook: `overlay.validate(plan, context)` before apply.
+- Apply path: `restsync apply --confirm` uses plan + apply spec to write changes.
 
 ## 5. Testing Notes
 

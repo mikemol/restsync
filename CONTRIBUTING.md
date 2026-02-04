@@ -1,5 +1,5 @@
 ---
-doc_revision: 7
+doc_revision: 8
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 7
+  README.md: 8
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -127,6 +127,11 @@ set `RESTSYNC_TOKEN` (or `GITHUB_TOKEN`) to supply a token explicitly.
 Validate plan and fail on overlay violations:
 ```
 restsync check --config configs/restsync.yml --output artifacts/plan_runs/plan.json
+```
+
+Apply changes (local only, requires explicit confirmation):
+```
+restsync apply --config configs/restsync.yml --confirm
 ```
 
 Generate a timestamped plan artifact:
