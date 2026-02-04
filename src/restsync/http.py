@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from typing import Any, Dict, Optional
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 
@@ -14,6 +15,8 @@ def request_json(
     url: str,
     token: Optional[str],
     body: Optional[Dict[str, Any]] = None,
+    *,
+    allow_not_found: bool = False,
 ) -> Dict[str, Any]:
     headers = {
         "Accept": "application/vnd.github+json",
@@ -29,6 +32,14 @@ def request_json(
     try:
         with urlopen(req) as resp:
             payload = resp.read().decode("utf-8")
+    except HTTPError as exc:
+        if allow_not_found and exc.code == 404:
+            return {}
+        detail = exc.read().decode("utf-8") if exc.fp is not None else ""
+        message = f"request failed: {method} {url} (HTTP {exc.code})"
+        if detail:
+            message = f"{message}: {detail}"
+        raise HttpError(message) from exc
     except OSError as exc:
         raise HttpError(f"request failed: {method} {url}") from exc
     if not payload:

@@ -16,8 +16,8 @@ def test_build_snapshot_uses_have_only():
     assert errors == []
     assert spec is not None
 
-    # dataflow-bundle: method, token, url
-    def fake_request(method, url, token):
+    # dataflow-bundle: allow_not_found, body, method, token, url
+    def fake_request(method, url, token, body=None, *, allow_not_found=False):
         return {"enabled": True}
 
     snapshot = build_snapshot(spec, token=None, request_func=fake_request)

@@ -28,7 +28,12 @@ def build_snapshot(
     endpoints = []
     for endpoint in sorted(spec.endpoints, key=lambda item: item.name):
         url = _format_url(spec, endpoint.url)
-        live = request_func(endpoint.method, url, token)
+        live = request_func(
+            endpoint.method,
+            url,
+            token,
+            allow_not_found=endpoint.allow_not_found,
+        )
         have = canonicalize(live, endpoint.compare)
         endpoints.append(
             {

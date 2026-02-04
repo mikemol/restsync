@@ -15,6 +15,12 @@ def test_canonicalize_keeps_nested_keys():
     assert canonicalize(value, compare) == {"parent": {"child": 1, "child2": 2}}
 
 
+def test_canonicalize_ignores_nested_keys():
+    compare = CompareSpec(include=["parent"], ignore=["skip"])
+    value = {"parent": {"skip": 1, "keep": 2}}
+    assert canonicalize(value, compare) == {"parent": {"keep": 2}}
+
+
 def test_diff_values_detects_nested_changes():
     want = {"a": 1, "b": {"c": 2}}
     have = {"a": 1, "b": {"c": 3}}

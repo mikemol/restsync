@@ -1,5 +1,5 @@
 ---
-doc_revision: 2
+doc_revision: 3
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: impl_desired_state_spec
 doc_role: implementation
@@ -50,13 +50,15 @@ loader emits a normalized in-memory structure to drive plan generation.
 
 - Top-level keys: `version`, `provider`, `overlay` (optional), `repo`, `base_url`,
   `auth`, `desired`, `endpoints`.
-- Endpoints: `name`, `method`, `url`, `compare`, `apply`.
+- Endpoints: `name`, `method`, `url`, `compare`, `apply`, `allow_not_found`.
 
 ## 3. Algorithms and Edge Cases
 
 - Validate endpoint uniqueness.
 - Require `url` to be absolute path.
 - Normalize HTTP method casing.
+- Treat `allow_not_found` (404) as empty for plan/snapshot.
+- Apply `compare.ignore` at all depths to drop volatile keys.
 
 ## 4. Integration Points
 

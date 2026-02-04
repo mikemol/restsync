@@ -10,7 +10,7 @@ def _project_keys(data: Dict[str, Any], compare: CompareSpec, depth: int) -> Ite
         keys = compare.include
     else:
         keys = data.keys()
-    if depth == 0 and compare.ignore:
+    if compare.ignore:
         return [key for key in keys if key not in compare.ignore]
     return list(keys)
 

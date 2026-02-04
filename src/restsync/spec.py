@@ -38,6 +38,7 @@ class EndpointSpec:
     method: str
     url: str
     compare: CompareSpec
+    allow_not_found: bool = False
     apply: Optional[ApplySpec] = None
 
 
@@ -151,6 +152,10 @@ def load_spec(path: Path) -> tuple[Optional[RestsyncSpec], List[str]]:
             errors.append(f"{label}.compare must be a mapping")
             compare_raw = {}
         compare = _load_compare(compare_raw)
+        allow_not_found = raw.get("allow_not_found", False)
+        if allow_not_found not in (True, False):
+            errors.append(f"{label}.allow_not_found must be a boolean")
+            allow_not_found = False
         apply_spec = None
         if "apply" in raw:
             apply_spec = _load_apply(raw.get("apply"), errors, f"{label}.apply")
@@ -160,6 +165,7 @@ def load_spec(path: Path) -> tuple[Optional[RestsyncSpec], List[str]]:
                 method=method,
                 url=url,
                 compare=compare,
+                allow_not_found=allow_not_found,
                 apply=apply_spec,
             )
         )

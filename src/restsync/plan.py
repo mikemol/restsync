@@ -50,7 +50,12 @@ def build_plan(spec: RestsyncSpec, token: Optional[str], overlay_path: Optional[
     endpoints = []
     for endpoint in sorted(spec.endpoints, key=lambda item: item.name):
         url = _format_url(spec, endpoint.url)
-        live = request_json(endpoint.method, url, token)
+        live = request_json(
+            endpoint.method,
+            url,
+            token,
+            allow_not_found=endpoint.allow_not_found,
+        )
         desired = _desired_for_endpoint(spec, endpoint)
         want = canonicalize(desired, endpoint.compare)
         have = canonicalize(live, endpoint.compare)

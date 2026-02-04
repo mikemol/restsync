@@ -1,5 +1,5 @@
 ---
-doc_revision: 2
+doc_revision: 3
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: design_desired_state_spec
 doc_role: design
@@ -50,6 +50,7 @@ canonicalization, drift detection, and overlay validation.
 - Desired state for each endpoint.
 - Shape maps for comparison.
 - Apply mappings (method/url/body source).
+- Optional endpoint flags (e.g., allow missing resources).
 
 Out of scope:
 - Provider-specific invariants (overlay responsibility).
@@ -64,6 +65,8 @@ Out of scope:
 - Identity is defined by canonicalization of the desired values.
 - Missing values are not equivalent to explicit null unless stated.
 - Shape map projection is explicit; no implicit ignores.
+- `compare.ignore` applies at all depths to drop volatile keys (e.g., `url`).
+- Endpoints may set `allow_not_found` to treat 404 responses as empty objects.
 
 ## 4. Plan/Apply Semantics
 

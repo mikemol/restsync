@@ -13,6 +13,8 @@ def test_load_spec_from_repo_config():
     assert spec.endpoints
     assert {e.name for e in spec.endpoints} == {
         "actions_permissions",
+        "branch_main_protection",
+        "branch_stage_protection",
         "selected_actions",
         "workflow_permissions",
     }
