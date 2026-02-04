@@ -26,6 +26,7 @@ CONTENT_WRITE_WORKFLOWS = {
     "release-tag.yml",
     "mirror-next.yml",
     "promote-release.yml",
+    "update-badges.yml",
 }
 
 _SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")

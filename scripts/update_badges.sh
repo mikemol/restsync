@@ -5,11 +5,12 @@ config="${RESTSYNC_CONFIG:-configs/restsync.yml}"
 plan_dir="${RESTSYNC_PLAN_DIR:-artifacts/plan_runs}"
 metrics_path="${RESTSYNC_METRICS_PATH:-$plan_dir/metrics.json}"
 badge_path="${RESTSYNC_BADGE_PATH:-docs/badges/plan-health.json}"
+restsync_bin="${RESTSYNC_BIN:-restsync}"
 
 mkdir -p "$plan_dir"
 mkdir -p "$(dirname "$badge_path")"
 
-restsync check \
+"$restsync_bin" check \
   --config "$config" \
   --baseline baselines/overlay_baseline.json \
   --output "$plan_dir/plan.json" \
