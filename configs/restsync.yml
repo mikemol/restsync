@@ -30,6 +30,8 @@ desired:
       contexts:
         - audit
         - dataflow-grammar
+    required_pull_request_reviews: null
+    restrictions: null
     required_signatures:
       enabled: false
     enforce_admins:
@@ -49,6 +51,9 @@ desired:
     allow_fork_syncing:
       enabled: false
   branch_stage_protection:
+    required_status_checks: null
+    required_pull_request_reviews: null
+    restrictions: null
     required_signatures:
       enabled: false
     enforce_admins:
@@ -133,6 +138,10 @@ endpoints:
         - checks
       sort:
         - contexts
+    apply:
+      method: PUT
+      url: /repos/{owner}/{repo}/branches/main/protection
+      body_from: desired.branch_main_protection
 
   - name: branch_stage_protection
     method: GET
@@ -156,3 +165,7 @@ endpoints:
         - checks
       sort:
         - contexts
+    apply:
+      method: PUT
+      url: /repos/{owner}/{repo}/branches/stage/protection
+      body_from: desired.branch_stage_protection
