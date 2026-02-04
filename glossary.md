@@ -15,8 +15,8 @@ doc_requires:
   - AGENTS.md
   - POLICY_SEED.md
 doc_reviewed_as_of:
-  README.md: 13
-  CONTRIBUTING.md: 13
+  README.md: 14
+  CONTRIBUTING.md: 14
   AGENTS.md: 1
   POLICY_SEED.md: 1
 doc_commutes_with:

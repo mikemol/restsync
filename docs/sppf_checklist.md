@@ -1,5 +1,5 @@
 ---
-doc_revision: 5
+doc_revision: 6
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: convergence_checklist
 doc_role: checklist
@@ -49,5 +49,6 @@ taxonomy.
 - [ ] GitHub tag rulesets parity. [entailed: github_overlay] (github_tag_rulesets)
 
 ## Tooling
-- [ ] Policy checks enforced in CI. [green] (tooling_policy_ci)
-- [ ] Docflow audit enforced in CI. [green] (tooling_docflow_ci)
+- [x] Policy checks enforced in CI. [green] (tooling_policy_ci)
+- [x] Docflow audit enforced in CI. [green] (tooling_docflow_ci)
+- [x] Dataflow audit enforced in CI. [green] (tooling_dataflow_ci)

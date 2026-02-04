@@ -1,5 +1,5 @@
 ---
-doc_revision: 13
+doc_revision: 14
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: readme
 doc_role: readme
@@ -18,7 +18,7 @@ doc_reviewed_as_of:
   POLICY_SEED.md: 1
   glossary.md: 1
   AGENTS.md: 1
-  CONTRIBUTING.md: 13
+  CONTRIBUTING.md: 14
 doc_change_protocol: "POLICY_SEED.md §6"
 doc_erasure:
   - formatting
@@ -68,6 +68,11 @@ Run policy and docflow checks:
 ```
 mise exec -- python scripts/policy_check.py --workflows
 mise exec -- python scripts/docflow_audit.py --root . --fail-on-violations
+```
+
+Run dataflow audit (gabion):
+```
+mise exec -- python -m gabion check --report artifacts/audit_reports/dataflow_report.md
 ```
 
 Validate config:
@@ -128,6 +133,7 @@ make test
 make plan
 make snapshot
 make docflow
+make dataflow
 make policy
 make badges
 make clean-artifacts

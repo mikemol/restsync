@@ -37,6 +37,14 @@ jobs:
         run: .venv/bin/python scripts/policy_check.py --workflows
       - name: Docflow audit
         run: .venv/bin/python scripts/docflow_audit.py --root . --fail-on-violations
+      - name: Dataflow audit
+        run: |
+          mkdir -p artifacts/audit_reports
+          baseline_arg=()
+          if [ -f baselines/dataflow_baseline.txt ]; then
+            baseline_arg+=(--baseline baselines/dataflow_baseline.txt)
+          fi
+          .venv/bin/python -m gabion check --report artifacts/audit_reports/dataflow_report.md "${baseline_arg[@]}"
       - name: Check plan (read-only)
         env:
           RESTSYNC_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -66,3 +74,9 @@ jobs:
         with:
           name: plan-runs
           path: artifacts/plan_runs
+      - name: Upload dataflow artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dataflow-report
+          path: artifacts/audit_reports

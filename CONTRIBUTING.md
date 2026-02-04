@@ -1,5 +1,5 @@
 ---
-doc_revision: 13
+doc_revision: 14
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 13
+  README.md: 14
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -112,6 +112,11 @@ Run docflow audit:
 mise exec -- python scripts/docflow_audit.py --root . --fail-on-violations
 ```
 
+Run dataflow audit (gabion):
+```
+mise exec -- python -m gabion check --report artifacts/audit_reports/dataflow_report.md
+```
+
 Validate config:
 ```
 restsync spec-check --config configs/restsync.yml
@@ -170,6 +175,7 @@ make test
 make plan
 make snapshot
 make docflow
+make dataflow
 make policy
 make badges
 make clean-artifacts
