@@ -1,5 +1,5 @@
 ---
-doc_revision: 15
+doc_revision: 16
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: readme
 doc_role: readme
@@ -18,7 +18,7 @@ doc_reviewed_as_of:
   POLICY_SEED.md: 1
   glossary.md: 1
   AGENTS.md: 1
-  CONTRIBUTING.md: 15
+  CONTRIBUTING.md: 16
 doc_change_protocol: "POLICY_SEED.md §6"
 doc_erasure:
   - formatting
@@ -72,6 +72,10 @@ mise exec -- python scripts/docflow_audit.py --root . --fail-on-violations
 The allow-list in `docs/allowed_actions.txt` is canonical and must match
 `configs/restsync.yml` `desired.selected_actions.patterns_allowed` (enforced by
 policy checks).
+To sync the config from the allow-list:
+```
+scripts/sync_allowed_actions.py
+```
 
 Run dataflow audit (gabion):
 ```
@@ -139,6 +143,7 @@ make docflow
 make dataflow
 make policy
 make badges
+make sync-actions
 make clean-artifacts
 ```
 

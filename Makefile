@@ -1,4 +1,4 @@
-.PHONY: bootstrap check test plan snapshot policy docflow dataflow badges clean-artifacts
+.PHONY: bootstrap check test plan snapshot policy docflow dataflow badges sync-actions clean-artifacts
 
 bootstrap:
 	@./scripts/bootstrap.sh
@@ -26,6 +26,9 @@ dataflow:
 
 badges:
 	@./scripts/update_badges.sh
+
+sync-actions:
+	@./scripts/sync_allowed_actions.py
 
 clean-artifacts:
 	@./scripts/clean_artifacts.sh
