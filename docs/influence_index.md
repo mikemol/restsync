@@ -17,8 +17,8 @@ doc_requires:
 doc_reviewed_as_of:
   POLICY_SEED.md: 1
   glossary.md: 1
-  CONTRIBUTING.md: 16
-  README.md: 16
+  CONTRIBUTING.md: 17
+  README.md: 17
 doc_change_protocol: "POLICY_SEED.md §6"
 doc_erasure:
   - formatting

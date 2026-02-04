@@ -1,5 +1,5 @@
 ---
-doc_revision: 16
+doc_revision: 17
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 16
+  README.md: 17
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -169,7 +169,7 @@ Update badge JSON from current plan metrics:
 scripts/update_badges.sh
 ```
 
-Run all checks (policy + docflow + tests):
+Run all checks (policy + docflow + dataflow + tests):
 ```
 scripts/checks.sh
 ```

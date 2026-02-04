@@ -3,7 +3,7 @@ set -euo pipefail
 
 run_policy=true
 run_docflow=true
-run_dataflow=false
+run_dataflow=true
 run_tests=true
 list_only=false
 
