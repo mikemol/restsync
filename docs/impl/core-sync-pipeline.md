@@ -1,5 +1,5 @@
 ---
-doc_revision: 1
+doc_revision: 2
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: impl_core_sync_pipeline
 doc_role: implementation
@@ -15,8 +15,8 @@ doc_requires:
   - POLICY_SEED.md
   - glossary.md
 doc_reviewed_as_of:
-  README.md: 10
-  CONTRIBUTING.md: 10
+  README.md: 11
+  CONTRIBUTING.md: 11
   POLICY_SEED.md: 1
   glossary.md: 1
 doc_change_protocol: "POLICY_SEED.md §6"
@@ -65,6 +65,7 @@ pipeline is REST-agnostic and delegates semantics to overlays.
 - CLI commands: `snapshot`, `plan`, `apply`.
 - Overlay hook: `overlay.validate(plan, context)` before apply.
 - Apply path: `restsync apply --confirm` uses plan + apply spec to write changes.
+- Snapshot path: `restsync snapshot` emits canonical `have` per endpoint.
 
 ## 5. Testing Notes
 

@@ -27,7 +27,7 @@ done
 if $list_only; then
   echo "Checks to run:" >&2
   $run_policy && echo "- policy (scripts/policy_check.py --workflows)" >&2
-  $run_docflow && echo "- docflow (gabion docflow-audit)" >&2
+  $run_docflow && echo "- docflow (scripts/docflow_audit.py)" >&2
   $run_dataflow && echo "- dataflow (gabion check)" >&2
   $run_tests && echo "- tests (pytest)" >&2
   exit 0
@@ -43,7 +43,7 @@ if $run_policy; then
 fi
 
 if $run_docflow; then
-  mise exec -- python -m gabion docflow-audit --root . --fail-on-violations
+  mise exec -- python scripts/docflow_audit.py --root . --fail-on-violations
 fi
 
 if $run_dataflow; then

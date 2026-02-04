@@ -65,13 +65,6 @@ def _require_str(value: Any, label: str, errors: List[str]) -> str:
     return ""
 
 
-def _require_int(value: Any, label: str, errors: List[str]) -> int:
-    if isinstance(value, int):
-        return value
-    errors.append(f"{label} must be an integer")
-    return 0
-
-
 def _load_compare(raw: Dict[str, Any]) -> CompareSpec:
     include = [str(item) for item in raw.get("include", [])]
     ignore = [str(item) for item in raw.get("ignore", [])]
@@ -97,7 +90,12 @@ def load_spec(path: Path) -> tuple[Optional[RestsyncSpec], List[str]]:
     data = _load_yaml(path)
     errors: List[str] = []
 
-    version = _require_int(data.get("version"), "version", errors)
+    version_raw = data.get("version")
+    if isinstance(version_raw, int):
+        version = version_raw
+    else:
+        errors.append("version must be an integer")
+        version = 0
     provider = _require_str(data.get("provider"), "provider", errors)
     base_url = _require_str(data.get("base_url"), "base_url", errors)
     overlay = data.get("overlay")

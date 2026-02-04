@@ -1,5 +1,5 @@
 ---
-doc_revision: 4
+doc_revision: 5
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: convergence_checklist
 doc_role: checklist
@@ -34,6 +34,7 @@ taxonomy.
 - [ ] Shape-map projection (include/ignore/sort). [entailed: core_sync_pipeline] (core_shape_map)
 - [ ] Deterministic diff (symmetric difference). [entailed: core_sync_pipeline] (core_deterministic_diff)
 - [ ] Desired-state spec (YAML schema + validation). [entailed: core_sync_pipeline] (desired_state_spec)
+- [x] Snapshot capture (read-only live state). [entailed: core_sync_pipeline] (snapshot_capture)
 
 ## Safety and apply
 - [ ] Plan format (stable JSON schema). [entailed: core_sync_pipeline] (plan_schema)

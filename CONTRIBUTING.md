@@ -1,5 +1,5 @@
 ---
-doc_revision: 10
+doc_revision: 11
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 10
+  README.md: 11
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -109,7 +109,7 @@ mise exec -- python scripts/policy_check.py --workflows
 
 Run docflow audit:
 ```
-mise exec -- python -m gabion docflow-audit --root . --fail-on-violations
+mise exec -- python scripts/docflow_audit.py --root . --fail-on-violations
 ```
 
 Validate config:
@@ -142,6 +142,11 @@ Apply changes (local only, requires explicit confirmation):
 restsync apply --config configs/restsync.yml --confirm
 ```
 
+Capture a read-only snapshot of live state:
+```
+restsync snapshot --config configs/restsync.yml --output artifacts/snapshots/snapshot.json
+```
+
 Generate a timestamped plan artifact:
 ```
 scripts/plan_snapshot.sh
@@ -158,6 +163,7 @@ make bootstrap
 make check
 make test
 make plan
+make snapshot
 make docflow
 make policy
 make clean-artifacts

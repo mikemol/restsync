@@ -8,6 +8,7 @@ from restsync.apply import apply_plan, ApplyError
 from restsync.auth import get_token
 from restsync.plan import plan_from_path, write_plan, PlanError
 from restsync.ratchet import apply_ratchet, load_baseline, write_baseline
+from restsync.snapshot import snapshot_from_path, write_snapshot, SnapshotError
 from restsync.summary import summarize_plan
 from restsync.spec import load_spec
 from restsync.spec import load_spec
@@ -73,6 +74,18 @@ def _cmd_check(args: argparse.Namespace) -> int:
             print(f"check: {code}{suffix}: {message}", file=sys.stderr)
         return 3
     print("check: ok")
+    return 0
+
+
+def _cmd_snapshot(args: argparse.Namespace) -> int:
+    try:
+        snapshot = snapshot_from_path(Path(args.config))
+    except SnapshotError as exc:
+        print(f"snapshot: {exc}", file=sys.stderr)
+        return 2
+    output = Path(args.output) if args.output else None
+    write_snapshot(snapshot, output)
+    print("snapshot: ok")
     return 0
 
 
@@ -152,6 +165,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write current violations to the baseline and exit",
     )
     check.set_defaults(func=_cmd_check)
+
+    snapshot = sub.add_parser(
+        "snapshot",
+        help="Capture the current live state (read-only)",
+        parents=[config_parent],
+    )
+    snapshot.add_argument(
+        "--output",
+        help="Write snapshot JSON to a file instead of stdout",
+    )
+    snapshot.set_defaults(func=_cmd_snapshot)
 
     apply = sub.add_parser(
         "apply",

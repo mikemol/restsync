@@ -1,5 +1,5 @@
 ---
-doc_revision: 1
+doc_revision: 2
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: design_core_sync_pipeline
 doc_role: design
@@ -15,8 +15,8 @@ doc_requires:
   - POLICY_SEED.md
   - glossary.md
 doc_reviewed_as_of:
-  README.md: 10
-  CONTRIBUTING.md: 10
+  README.md: 11
+  CONTRIBUTING.md: 11
   POLICY_SEED.md: 1
   glossary.md: 1
 doc_change_protocol: "POLICY_SEED.md §6"
@@ -49,6 +49,7 @@ foundation for overlays and dogfooding, while keeping apply explicit and local.
 - Canonicalize and project fields using shape maps.
 - Compute drift as symmetric differences.
 - Emit a stable, reviewable plan.
+- Capture read-only snapshots of live state.
 
 Out of scope:
 - Provider-specific semantics (overlay responsibility).

@@ -1,4 +1,4 @@
-.PHONY: bootstrap check test plan policy docflow clean-artifacts
+.PHONY: bootstrap check test plan snapshot policy docflow clean-artifacts
 
 bootstrap:
 	@./scripts/bootstrap.sh
@@ -12,11 +12,14 @@ test:
 plan:
 	@./scripts/plan_snapshot.sh
 
+snapshot:
+	@./scripts/snapshot.sh
+
 policy:
 	@mise exec -- python scripts/policy_check.py --workflows
 
 docflow:
-	@mise exec -- python -m gabion docflow-audit --root . --fail-on-violations
+	@mise exec -- python scripts/docflow_audit.py --root . --fail-on-violations
 
 clean-artifacts:
 	@./scripts/clean_artifacts.sh
