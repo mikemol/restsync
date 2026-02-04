@@ -33,17 +33,24 @@ if $list_only; then
   exit 0
 fi
 
-if ! command -v mise >/dev/null 2>&1; then
-  echo "mise is required. Install from https://mise.jdx.dev" >&2
+PYTHON_CMD=()
+if [ -n "${RESTSYNC_PYTHON:-}" ]; then
+  PYTHON_CMD=("$RESTSYNC_PYTHON")
+elif [ -n "${VIRTUAL_ENV:-}" ] && [ -x "${VIRTUAL_ENV}/bin/python" ]; then
+  PYTHON_CMD=("${VIRTUAL_ENV}/bin/python")
+elif command -v mise >/dev/null 2>&1; then
+  PYTHON_CMD=(mise exec -- python)
+else
+  echo "python environment not found; set RESTSYNC_PYTHON, activate venv, or install mise." >&2
   exit 1
 fi
 
 if $run_policy; then
-  mise exec -- python scripts/policy_check.py --workflows
+  "${PYTHON_CMD[@]}" scripts/policy_check.py --workflows
 fi
 
 if $run_docflow; then
-  mise exec -- python scripts/docflow_audit.py --root . --fail-on-violations
+  "${PYTHON_CMD[@]}" scripts/docflow_audit.py --root . --fail-on-violations
 fi
 
 if $run_dataflow; then
@@ -54,13 +61,13 @@ if $run_dataflow; then
   if [ -f baselines/dataflow_baseline.txt ]; then
     baseline_arg+=(--baseline baselines/dataflow_baseline.txt)
   fi
-  mise exec -- python -m gabion check --report "$report_path" "${baseline_arg[@]}"
+  "${PYTHON_CMD[@]}" -m gabion check --report "$report_path" "${baseline_arg[@]}"
 fi
 
 if $run_tests; then
   test_dir="${TEST_ARTIFACTS_DIR:-artifacts/test_runs}"
   mkdir -p "$test_dir"
-  mise exec -- python -m pytest \
+  "${PYTHON_CMD[@]}" -m pytest \
     --junitxml "$test_dir/junit.xml" \
     --log-file "$test_dir/pytest.log" \
     --log-file-level=INFO
