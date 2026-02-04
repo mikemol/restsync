@@ -47,11 +47,14 @@ if $run_docflow; then
 fi
 
 if $run_dataflow; then
+  report_dir="${DATAFLOW_REPORT_DIR:-artifacts/audit_reports}"
+  report_path="${DATAFLOW_REPORT_PATH:-$report_dir/dataflow_report.md}"
+  mkdir -p "$report_dir"
   baseline_arg=()
   if [ -f baselines/dataflow_baseline.txt ]; then
     baseline_arg+=(--baseline baselines/dataflow_baseline.txt)
   fi
-  mise exec -- python -m gabion check "${baseline_arg[@]}"
+  mise exec -- python -m gabion check --report "$report_path" "${baseline_arg[@]}"
 fi
 
 if $run_tests; then

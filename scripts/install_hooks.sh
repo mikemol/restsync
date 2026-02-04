@@ -21,6 +21,7 @@ fi
 repo_root=$(git rev-parse --show-toplevel)
 "$repo_root/scripts/checks.sh" --policy-only
 "$repo_root/scripts/checks.sh" --docflow-only
+"$repo_root/scripts/checks.sh" --dataflow-only
 EOF_INNER
 
 cat > "$hooks_dir/pre-push" <<'EOF_INNER'
