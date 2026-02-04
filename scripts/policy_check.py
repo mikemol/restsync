@@ -19,6 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_DIR = REPO_ROOT / ".github" / "workflows"
 
 ALLOWED_ACTIONS_FILE = REPO_ROOT / "docs" / "allowed_actions.txt"
+RESTSYNC_CONFIG_FILE = REPO_ROOT / "configs" / "restsync.yml"
 REQUIRED_RUNNER_LABELS = {"self-hosted", "local"}
 TRUSTED_BRANCHES = {"main", "stage", "next", "release"}
 CONTENT_WRITE_WORKFLOWS = {
@@ -58,6 +59,26 @@ def _load_allowed_actions(path: Path) -> set[str]:
             continue
         allowed.add(line)
     return allowed
+
+
+def _load_selected_actions_patterns(errors) -> set[str] | None:
+    if not RESTSYNC_CONFIG_FILE.exists():
+        errors.append(f"missing restsync config: {RESTSYNC_CONFIG_FILE}")
+        return None
+    doc = _load_yaml(RESTSYNC_CONFIG_FILE)
+    desired = doc.get("desired")
+    if not isinstance(desired, dict):
+        errors.append("restsync config desired must be a mapping")
+        return None
+    selected = desired.get("selected_actions")
+    if not isinstance(selected, dict):
+        errors.append("restsync config desired.selected_actions must be a mapping")
+        return None
+    patterns = selected.get("patterns_allowed")
+    if not isinstance(patterns, list):
+        errors.append("restsync config desired.selected_actions.patterns_allowed must be a list")
+        return None
+    return {str(item).strip() for item in patterns if str(item).strip()}
 
 
 def _yaml_loader():
@@ -510,6 +531,21 @@ def check_workflows():
     if not allowed_actions:
         _fail([f"allowed actions list is empty or missing: {ALLOWED_ACTIONS_FILE}"])
     errors = []
+    selected_patterns = _load_selected_actions_patterns(errors)
+    if selected_patterns is not None:
+        missing = sorted(allowed_actions - selected_patterns)
+        extra = sorted(selected_patterns - allowed_actions)
+        if missing or extra:
+            if missing:
+                errors.append(
+                    "restsync config is missing allowed actions: "
+                    + ", ".join(missing)
+                )
+            if extra:
+                errors.append(
+                    "restsync config has extra allowed actions: "
+                    + ", ".join(extra)
+                )
     for path in sorted(WORKFLOW_DIR.glob("*.yml")):
         doc = _load_yaml(path)
         jobs = doc.get("jobs", {})

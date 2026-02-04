@@ -1,5 +1,5 @@
 ---
-doc_revision: 14
+doc_revision: 15
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 14
+  README.md: 15
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -106,6 +106,9 @@ Run policy checks:
 ```
 mise exec -- python scripts/policy_check.py --workflows
 ```
+The allow-list in `docs/allowed_actions.txt` is canonical and must match
+`configs/restsync.yml` `desired.selected_actions.patterns_allowed` (enforced by
+policy checks).
 
 Run docflow audit:
 ```

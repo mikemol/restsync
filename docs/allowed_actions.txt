@@ -1,5 +1,6 @@
 # Allow-listed GitHub Actions (owner/repo).
 # Keep in sync with GitHub Actions allow-list settings and policy checks.
+# Must match configs/restsync.yml desired.selected_actions.patterns_allowed.
 actions/checkout
 actions/download-artifact
 actions/upload-artifact
