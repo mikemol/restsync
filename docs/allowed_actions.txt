@@ -4,3 +4,4 @@
 actions/checkout
 actions/download-artifact
 actions/upload-artifact
+jdx/mise-action

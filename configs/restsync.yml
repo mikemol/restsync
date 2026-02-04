@@ -20,6 +20,7 @@ desired:
       - actions/checkout
       - actions/download-artifact
       - actions/upload-artifact
+      - jdx/mise-action
   workflow_permissions:
     default_workflow_permissions: read
     can_approve_pull_request_reviews: false
