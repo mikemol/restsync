@@ -18,13 +18,13 @@ jobs:
     env:
       MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
     steps:
-      # Allow-listed actions: actions/checkout, jdx/mise-action, actions/upload-artifact
+      # Allow-listed actions: actions/checkout, actions/setup-python, actions/upload-artifact
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-      - name: Install mise
-        uses: jdx/mise-action@6d1e696aa24c1aa1bcc1adea0212707c71ab78a8
-      - name: Install toolchain
-        run: mise install
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11.8"
       - name: Create venv
         run: |
           mise exec -- python -m venv .venv
