@@ -1,4 +1,4 @@
-.PHONY: bootstrap check test policy docflow clean-artifacts
+.PHONY: bootstrap check test plan policy docflow clean-artifacts
 
 bootstrap:
 	@./scripts/bootstrap.sh
@@ -8,6 +8,9 @@ check:
 
 test:
 	@mise exec -- python -m pytest
+
+plan:
+	@./scripts/plan_snapshot.sh
 
 policy:
 	@mise exec -- python scripts/policy_check.py --workflows

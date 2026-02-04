@@ -1,5 +1,5 @@
 ---
-doc_revision: 4
+doc_revision: 5
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 4
+  README.md: 5
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -122,6 +122,11 @@ Generate a read-only plan:
 restsync plan --config configs/restsync.yml
 ```
 
+Generate a timestamped plan artifact:
+```
+scripts/plan_snapshot.sh
+```
+
 Run all checks (policy + docflow + tests):
 ```
 scripts/checks.sh
@@ -132,6 +137,7 @@ Make targets are available for common tasks:
 make bootstrap
 make check
 make test
+make plan
 make docflow
 make policy
 make clean-artifacts

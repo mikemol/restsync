@@ -1,5 +1,5 @@
 ---
-doc_revision: 4
+doc_revision: 5
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: readme
 doc_role: readme
@@ -18,7 +18,7 @@ doc_reviewed_as_of:
   POLICY_SEED.md: 1
   glossary.md: 1
   AGENTS.md: 1
-  CONTRIBUTING.md: 4
+  CONTRIBUTING.md: 5
 doc_change_protocol: "POLICY_SEED.md §6"
 doc_erasure:
   - formatting
@@ -78,6 +78,11 @@ Generate a read-only plan:
 restsync plan --config configs/restsync.yml
 ```
 
+Generate a timestamped plan artifact:
+```
+scripts/plan_snapshot.sh
+```
+
 Run tests:
 ```
 mise exec -- python -m pytest
@@ -88,6 +93,7 @@ mise exec -- python -m pytest
 make bootstrap
 make check
 make test
+make plan
 make docflow
 make policy
 make clean-artifacts
