@@ -87,7 +87,7 @@ jobs:
               break
           PY
       - name: Install package
-        run: .venv/bin/python -m pip install -e .
+        run: .venv/bin/python -m pip install -e .[dev]
       - name: Render dataflow grammar report
         run: |
           mkdir -p artifacts/dataflow_grammar
