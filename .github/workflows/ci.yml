@@ -45,7 +45,8 @@ jobs:
           .venv/bin/restsync check \
             --config configs/restsync.yml \
             --baseline baselines/overlay_baseline.json \
-            --output artifacts/plan_runs/plan.json
+            --output artifacts/plan_runs/plan.json \
+            --metrics artifacts/plan_runs/metrics.json
       - name: Tests
         run: |
           mkdir -p artifacts/test_runs

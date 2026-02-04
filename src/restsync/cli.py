@@ -6,11 +6,11 @@ import sys
 
 from restsync.apply import apply_plan, ApplyError
 from restsync.auth import get_token
+from restsync.metrics import collect_metrics, write_metrics
 from restsync.plan import plan_from_path, write_plan, PlanError
 from restsync.ratchet import apply_ratchet, load_baseline, write_baseline
 from restsync.snapshot import snapshot_from_path, write_snapshot, SnapshotError
 from restsync.summary import summarize_plan
-from restsync.spec import load_spec
 from restsync.spec import load_spec
 
 
@@ -33,6 +33,8 @@ def _cmd_plan(args: argparse.Namespace) -> int:
         return 2
     output = Path(args.output) if args.output else None
     write_plan(plan, output)
+    if args.metrics:
+        write_metrics(collect_metrics(plan), Path(args.metrics))
     print(summarize_plan(plan))
     return 0
 
@@ -45,6 +47,8 @@ def _cmd_check(args: argparse.Namespace) -> int:
         return 2
     output = Path(args.output) if args.output else None
     write_plan(plan, output)
+    if args.metrics:
+        write_metrics(collect_metrics(plan), Path(args.metrics))
     print(summarize_plan(plan))
     overlay = plan.get("overlay") or {}
     violations = overlay.get("violations") or []
@@ -144,6 +148,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--output",
         help="Write plan JSON to a file instead of stdout",
     )
+    plan.add_argument(
+        "--metrics",
+        help="Write metrics JSON to a file instead of stdout",
+    )
     plan.set_defaults(func=_cmd_plan)
 
     check = sub.add_parser(
@@ -163,6 +171,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--baseline-write",
         action="store_true",
         help="Write current violations to the baseline and exit",
+    )
+    check.add_argument(
+        "--metrics",
+        help="Write metrics JSON to a file instead of stdout",
     )
     check.set_defaults(func=_cmd_check)
 

@@ -1,5 +1,5 @@
 ---
-doc_revision: 11
+doc_revision: 12
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 11
+  README.md: 12
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -119,17 +119,17 @@ restsync spec-check --config configs/restsync.yml
 
 Generate a read-only plan:
 ```
-restsync plan --config configs/restsync.yml
+restsync plan --config configs/restsync.yml --metrics artifacts/plan_runs/metrics.json
 ```
 By default, auth is `gh` (uses `gh auth token`). In CI or headless contexts,
 set `RESTSYNC_TOKEN` (or `GITHUB_TOKEN`) to supply a token explicitly.
 
 Validate plan and fail on overlay violations:
 ```
-restsync check --config configs/restsync.yml --output artifacts/plan_runs/plan.json
+restsync check --config configs/restsync.yml --output artifacts/plan_runs/plan.json --metrics artifacts/plan_runs/metrics.json
 ```
 
-Plan/check output includes a short human-readable summary.
+Plan/check output includes a short human-readable summary plus optional metrics JSON.
 
 Overlay baselines (ratchet mode):
 ```
@@ -147,7 +147,7 @@ Capture a read-only snapshot of live state:
 restsync snapshot --config configs/restsync.yml --output artifacts/snapshots/snapshot.json
 ```
 
-Generate a timestamped plan artifact:
+Generate timestamped plan + metrics artifacts:
 ```
 scripts/plan_snapshot.sh
 ```
