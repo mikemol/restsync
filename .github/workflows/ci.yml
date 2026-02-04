@@ -37,12 +37,12 @@ jobs:
         run: .venv/bin/python scripts/policy_check.py --workflows
       - name: Docflow audit
         run: .venv/bin/python -m gabion docflow-audit --root . --fail-on-violations
-      - name: Generate plan (read-only)
+      - name: Check plan (read-only)
         env:
           RESTSYNC_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p artifacts/plan_runs
-          .venv/bin/restsync plan --config configs/restsync.yml --output artifacts/plan_runs/plan.json
+          .venv/bin/restsync check --config configs/restsync.yml --output artifacts/plan_runs/plan.json
       - name: Tests
         run: |
           mkdir -p artifacts/test_runs

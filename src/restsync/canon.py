@@ -5,12 +5,14 @@ from typing import Any, Dict, Iterable
 from restsync.spec import CompareSpec
 
 
-def _project_keys(data: Dict[str, Any], compare: CompareSpec) -> Iterable[str]:
-    if compare.include:
+def _project_keys(data: Dict[str, Any], compare: CompareSpec, depth: int) -> Iterable[str]:
+    if depth == 0 and compare.include:
         keys = compare.include
     else:
         keys = data.keys()
-    return [key for key in keys if key not in compare.ignore]
+    if depth == 0 and compare.ignore:
+        return [key for key in keys if key not in compare.ignore]
+    return list(keys)
 
 
 def _sort_list(value: list[Any]) -> list[Any]:
@@ -21,15 +23,15 @@ def _sort_list(value: list[Any]) -> list[Any]:
         return sorted(value, key=lambda item: str(item))
 
 
-def canonicalize(value: Any, compare: CompareSpec) -> Any:
+def canonicalize(value: Any, compare: CompareSpec, *, depth: int = 0) -> Any:
     if isinstance(value, dict):
         projected: Dict[str, Any] = {}
-        for key in _project_keys(value, compare):
+        for key in _project_keys(value, compare, depth):
             if key in value:
-                projected[key] = canonicalize(value[key], compare)
+                projected[key] = canonicalize(value[key], compare, depth=depth + 1)
         return projected
     if isinstance(value, list):
-        items = [canonicalize(item, compare) for item in value]
+        items = [canonicalize(item, compare, depth=depth + 1) for item in value]
         # Sort lists only when explicitly requested (top-level compare.sort).
         if compare.sort:
             return _sort_list(items)

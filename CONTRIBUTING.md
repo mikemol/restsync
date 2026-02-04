@@ -1,5 +1,5 @@
 ---
-doc_revision: 6
+doc_revision: 7
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 6
+  README.md: 7
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -123,6 +123,11 @@ restsync plan --config configs/restsync.yml
 ```
 By default, auth is `gh` (uses `gh auth token`). In CI or headless contexts,
 set `RESTSYNC_TOKEN` (or `GITHUB_TOKEN`) to supply a token explicitly.
+
+Validate plan and fail on overlay violations:
+```
+restsync check --config configs/restsync.yml --output artifacts/plan_runs/plan.json
+```
 
 Generate a timestamped plan artifact:
 ```

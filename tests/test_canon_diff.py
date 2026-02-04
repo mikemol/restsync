@@ -9,6 +9,12 @@ def test_canonicalize_projects_keys():
     assert canonicalize(value, compare) == {"a": 1}
 
 
+def test_canonicalize_keeps_nested_keys():
+    compare = CompareSpec(include=["parent"])
+    value = {"parent": {"child": 1, "child2": 2}}
+    assert canonicalize(value, compare) == {"parent": {"child": 1, "child2": 2}}
+
+
 def test_diff_values_detects_nested_changes():
     want = {"a": 1, "b": {"c": 2}}
     have = {"a": 1, "b": {"c": 3}}
