@@ -34,7 +34,7 @@ jobs:
           .venv/bin/python -m pip install --upgrade pip
           .venv/bin/python -m pip install -e .
       - name: Update badge JSON
-        if: ${{ secrets.RESTSYNC_TOKEN != '' }}
+        if: ${{ secrets.RESTSYNC_TOKEN }}
         env:
           RESTSYNC_TOKEN: ${{ secrets.RESTSYNC_TOKEN }}
           RESTSYNC_BIN: ${{ github.workspace }}/.venv/bin/restsync

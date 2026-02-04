@@ -36,7 +36,7 @@ jobs:
       - name: Run checks
         run: scripts/checks.sh
       - name: Check plan (read-only)
-        if: ${{ secrets.RESTSYNC_TOKEN != '' }}
+        if: ${{ secrets.RESTSYNC_TOKEN }}
         env:
           RESTSYNC_TOKEN: ${{ secrets.RESTSYNC_TOKEN }}
         run: |
