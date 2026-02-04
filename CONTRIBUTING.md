@@ -1,5 +1,5 @@
 ---
-doc_revision: 12
+doc_revision: 13
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: contributing
 doc_role: guide
@@ -16,7 +16,7 @@ doc_requires:
   - glossary.md
   - docs/coverage_semantics.md
 doc_reviewed_as_of:
-  README.md: 12
+  README.md: 13
   AGENTS.md: 1
   POLICY_SEED.md: 1
   glossary.md: 1
@@ -152,6 +152,11 @@ Generate timestamped plan + metrics artifacts:
 scripts/plan_snapshot.sh
 ```
 
+Update badge JSON from current plan metrics:
+```
+scripts/update_badges.sh
+```
+
 Run all checks (policy + docflow + tests):
 ```
 scripts/checks.sh
@@ -166,6 +171,7 @@ make plan
 make snapshot
 make docflow
 make policy
+make badges
 make clean-artifacts
 ```
 

@@ -1,5 +1,5 @@
 ---
-doc_revision: 12
+doc_revision: 13
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: readme
 doc_role: readme
@@ -18,7 +18,7 @@ doc_reviewed_as_of:
   POLICY_SEED.md: 1
   glossary.md: 1
   AGENTS.md: 1
-  CONTRIBUTING.md: 12
+  CONTRIBUTING.md: 13
 doc_change_protocol: "POLICY_SEED.md §6"
 doc_erasure:
   - formatting
@@ -27,6 +27,8 @@ doc_owner: maintainer
 ---
 
 # restsync
+
+![plan health](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/mikemol/restsync/main/docs/badges/plan-health.json)
 
 Restsync is an "rsync for REST" tool: a desired-state sync engine that
 compares live REST resources against a local spec, produces a plan, and (when
@@ -108,6 +110,11 @@ Generate timestamped plan + metrics artifacts:
 scripts/plan_snapshot.sh
 ```
 
+Update badge JSON from current plan metrics:
+```
+scripts/update_badges.sh
+```
+
 Run tests:
 ```
 mise exec -- python -m pytest
@@ -119,8 +126,10 @@ make bootstrap
 make check
 make test
 make plan
+make snapshot
 make docflow
 make policy
+make badges
 make clean-artifacts
 ```
 

@@ -1,4 +1,4 @@
-.PHONY: bootstrap check test plan snapshot policy docflow clean-artifacts
+.PHONY: bootstrap check test plan snapshot policy docflow badges clean-artifacts
 
 bootstrap:
 	@./scripts/bootstrap.sh
@@ -20,6 +20,9 @@ policy:
 
 docflow:
 	@mise exec -- python scripts/docflow_audit.py --root . --fail-on-violations
+
+badges:
+	@./scripts/update_badges.sh
 
 clean-artifacts:
 	@./scripts/clean_artifacts.sh
