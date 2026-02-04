@@ -61,6 +61,27 @@ def _load_allowed_actions(path: Path) -> set[str]:
     return allowed
 
 
+def _parse_allowed_actions(entries: set[str]) -> tuple[set[str], dict[str, set[str]]]:
+    names: set[str] = set()
+    refs: dict[str, set[str]] = {}
+    for entry in entries:
+        if "@" in entry:
+            name, ref = entry.split("@", 1)
+            name = name.strip()
+            ref = ref.strip()
+            if not name or not ref:
+                continue
+            names.add(name)
+            refs.setdefault(name, set()).add(ref)
+        else:
+            name = entry.strip()
+            if not name:
+                continue
+            names.add(name)
+            refs.setdefault(name, set()).add("*")
+    return names, refs
+
+
 def _load_selected_actions_patterns(errors) -> set[str] | None:
     if not RESTSYNC_CONFIG_FILE.exists():
         errors.append(f"missing restsync config: {RESTSYNC_CONFIG_FILE}")
@@ -446,7 +467,13 @@ def _check_release_pypi_workflow(doc, path, errors):
             )
 
 
-def _check_actions(job, job_ctx: JobContext, errors, allowed_actions: set[str]):
+def _check_actions(
+    job,
+    job_ctx: JobContext,
+    errors,
+    allowed_names: set[str],
+    allowed_refs: dict[str, set[str]],
+):
     # dataflow-bundle: errors, job, job_ctx
     steps = job.get("steps", [])
     for idx, step in enumerate(steps):
@@ -468,10 +495,16 @@ def _check_actions(job, job_ctx: JobContext, errors, allowed_actions: set[str]):
             )
             continue
         action_name = "/".join(action_parts[:2])
-        if action_name not in allowed_actions:
+        if action_name not in allowed_names:
             errors.append(
                 f"{job_ctx.path}:{job_ctx.job_name}: step {idx} action not allow-listed ({action_name})"
             )
+        else:
+            refs = allowed_refs.get(action_name, set())
+            if "*" not in refs and ref not in refs:
+                errors.append(
+                    f"{job_ctx.path}:{job_ctx.job_name}: step {idx} action ref not allow-listed ({uses})"
+                )
         if not _SHA_RE.match(ref):
             errors.append(
                 f"{job_ctx.path}:{job_ctx.job_name}: step {idx} action not pinned to full SHA ({uses})"
@@ -530,6 +563,7 @@ def check_workflows():
     allowed_actions = _load_allowed_actions(ALLOWED_ACTIONS_FILE)
     if not allowed_actions:
         _fail([f"allowed actions list is empty or missing: {ALLOWED_ACTIONS_FILE}"])
+    allowed_names, allowed_refs = _parse_allowed_actions(allowed_actions)
     errors = []
     selected_patterns = _load_selected_actions_patterns(errors)
     if selected_patterns is not None:
@@ -593,7 +627,13 @@ def check_workflows():
                     allow_id_token=allow_id_token,
                     allow_contents_write=allow_contents_write,
                 )
-                _check_actions(job, job_ctx, errors, allowed_actions)
+                _check_actions(
+                    job,
+                    job_ctx,
+                    errors,
+                    allowed_names,
+                    allowed_refs,
+                )
     if errors:
         _fail(errors)
 
@@ -674,24 +714,24 @@ def check_posture():
     if selected.get("github_owned_allowed") or selected.get("verified_allowed"):
         errors.append("only allow-listed actions are permitted (disable broad allowances)")
 
-    patterns = selected.get("patterns_allowed") or []
-    normalized = []
+    patterns = [str(item).strip() for item in (selected.get("patterns_allowed") or [])]
     invalid_patterns = []
     for pattern in patterns:
         if "@" in pattern:
             name, ref = pattern.split("@", 1)
-            if ref != "*":
+            if not name or not ref:
                 invalid_patterns.append(pattern)
                 continue
-            normalized.append(name)
-        else:
-            normalized.append(pattern)
+            if ref != "*" and not _SHA_RE.match(ref):
+                invalid_patterns.append(pattern)
+                continue
     if invalid_patterns:
         errors.append(
-            f"invalid action patterns (must end with @* or be bare): {sorted(invalid_patterns)}"
+            "invalid action patterns (must be bare, @*, or @<sha>): "
+            + ", ".join(sorted(invalid_patterns))
         )
     allowed_actions = _load_allowed_actions(ALLOWED_ACTIONS_FILE)
-    if set(normalized) != set(allowed_actions):
+    if set(patterns) != set(allowed_actions):
         errors.append(
             f"allowed action patterns must match {sorted(allowed_actions)}"
         )
