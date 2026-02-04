@@ -269,7 +269,10 @@ def _influence_warnings(root: Path) -> List[str]:
         return warnings
     index_text = index_path.read_text(encoding="utf-8")
     for path in sorted(inbox.glob("in-*.md")):
-        rel = path.as_posix()
+        try:
+            rel = path.relative_to(root).as_posix()
+        except ValueError:
+            rel = path.as_posix()
         if rel not in index_text:
             warnings.append(f"docs/influence_index.md: missing {rel}")
     return warnings

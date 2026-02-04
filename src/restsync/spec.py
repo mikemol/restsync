@@ -23,6 +23,7 @@ class CompareSpec:
     include: List[str] = field(default_factory=list)
     ignore: List[str] = field(default_factory=list)
     sort: List[str] = field(default_factory=list)
+    unwrap_enabled: List[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -70,7 +71,13 @@ def _load_compare(raw: Dict[str, Any]) -> CompareSpec:
     include = [str(item) for item in raw.get("include", [])]
     ignore = [str(item) for item in raw.get("ignore", [])]
     sort = [str(item) for item in raw.get("sort", [])]
-    return CompareSpec(include=include, ignore=ignore, sort=sort)
+    unwrap_enabled = [str(item) for item in raw.get("unwrap_enabled", [])]
+    return CompareSpec(
+        include=include,
+        ignore=ignore,
+        sort=sort,
+        unwrap_enabled=unwrap_enabled,
+    )
 
 
 def _load_apply(raw: Dict[str, Any], errors: List[str], label: str) -> Optional[ApplySpec]:

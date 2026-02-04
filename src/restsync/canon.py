@@ -23,12 +23,30 @@ def _sort_list(value: list[Any]) -> list[Any]:
         return sorted(value, key=lambda item: str(item))
 
 
-def canonicalize(value: Any, compare: CompareSpec, *, depth: int = 0) -> Any:
+def canonicalize(
+    value: Any,
+    compare: CompareSpec,
+    *,
+    depth: int = 0,
+    key: str | None = None,
+) -> Any:
+    if key and key in compare.unwrap_enabled:
+        if isinstance(value, dict):
+            enabled = value.get("enabled")
+            if isinstance(enabled, bool):
+                return enabled
+        if isinstance(value, bool):
+            return value
     if isinstance(value, dict):
         projected: Dict[str, Any] = {}
         for key in _project_keys(value, compare, depth):
             if key in value:
-                projected[key] = canonicalize(value[key], compare, depth=depth + 1)
+                projected[key] = canonicalize(
+                    value[key],
+                    compare,
+                    depth=depth + 1,
+                    key=key,
+                )
         return projected
     if isinstance(value, list):
         items = [canonicalize(item, compare, depth=depth + 1) for item in value]

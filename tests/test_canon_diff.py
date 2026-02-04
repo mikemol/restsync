@@ -21,6 +21,12 @@ def test_canonicalize_ignores_nested_keys():
     assert canonicalize(value, compare) == {"parent": {"keep": 2}}
 
 
+def test_canonicalize_unwraps_enabled_fields():
+    compare = CompareSpec(include=["toggle", "other"], unwrap_enabled=["toggle"])
+    value = {"toggle": {"enabled": False}, "other": {"enabled": True}}
+    assert canonicalize(value, compare) == {"toggle": False, "other": {"enabled": True}}
+
+
 def test_diff_values_detects_nested_changes():
     want = {"a": 1, "b": {"c": 2}}
     have = {"a": 1, "b": {"c": 3}}
