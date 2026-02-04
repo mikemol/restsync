@@ -7,6 +7,7 @@ import sys
 from restsync.apply import apply_plan, ApplyError
 from restsync.auth import get_token
 from restsync.plan import plan_from_path, write_plan, PlanError
+from restsync.ratchet import apply_ratchet, load_baseline, write_baseline
 from restsync.summary import summarize_plan
 from restsync.spec import load_spec
 from restsync.spec import load_spec
@@ -51,6 +52,18 @@ def _cmd_check(args: argparse.Namespace) -> int:
         for err in errors:
             print(f"check: overlay error: {err}", file=sys.stderr)
         return 2
+    baseline_path = Path(args.baseline) if args.baseline else None
+    if args.baseline_write:
+        if baseline_path is None:
+            print("check: --baseline-write requires --baseline", file=sys.stderr)
+            return 2
+        write_baseline(baseline_path, violations)
+        print(f"check: wrote baseline to {baseline_path}")
+        return 0
+    if violations and baseline_path is not None:
+        baseline = load_baseline(baseline_path)
+        ratchet = apply_ratchet(violations, baseline)
+        violations = ratchet.violations
     if violations:
         for v in violations:
             code = v.get("code", "overlay.violation")
@@ -128,6 +141,15 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument(
         "--output",
         help="Write plan JSON to a file instead of stdout",
+    )
+    check.add_argument(
+        "--baseline",
+        help="Path to an overlay baseline file (JSON)",
+    )
+    check.add_argument(
+        "--baseline-write",
+        action="store_true",
+        help="Write current violations to the baseline and exit",
     )
     check.set_defaults(func=_cmd_check)
 

@@ -1,5 +1,5 @@
 ---
-doc_revision: 9
+doc_revision: 10
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: readme
 doc_role: readme
@@ -18,7 +18,7 @@ doc_reviewed_as_of:
   POLICY_SEED.md: 1
   glossary.md: 1
   AGENTS.md: 1
-  CONTRIBUTING.md: 9
+  CONTRIBUTING.md: 10
 doc_change_protocol: "POLICY_SEED.md §6"
 doc_erasure:
   - formatting
@@ -86,6 +86,12 @@ restsync check --config configs/restsync.yml --output artifacts/plan_runs/plan.j
 ```
 
 Plan and check output includes a short human-readable summary.
+
+Overlay baselines (ratchet mode):
+```
+restsync check --config configs/restsync.yml --baseline baselines/overlay_baseline.json
+restsync check --config configs/restsync.yml --baseline baselines/overlay_baseline.json --baseline-write
+```
 
 Apply changes (local only, requires explicit confirmation):
 ```

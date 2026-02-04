@@ -89,35 +89,45 @@ def validate_plan(plan: Dict[str, Any], overlay: OverlayConfig) -> List[Dict[str
                 )
             )
         if allow_list:
-            selected = want.get("selected_actions") or {}
-            patterns = selected.get("patterns") or []
-            if not isinstance(patterns, list):
+            selected = _find_endpoint(plan, "selected_actions")
+            if selected is None:
                 violations.append(
                     _violation(
-                        "github.actions.patterns",
-                        "selected_actions.patterns must be a list",
-                        endpoint="actions_permissions",
+                        "github.actions.selected_actions_missing",
+                        "missing selected_actions endpoint",
+                        endpoint="selected_actions",
                     )
                 )
             else:
-                missing = sorted(set(allow_list) - set(patterns))
-                extra = sorted(set(patterns) - set(allow_list))
-                if missing:
+                want_selected = selected.get("want") or {}
+                patterns = want_selected.get("patterns_allowed") or []
+                if not isinstance(patterns, list):
                     violations.append(
                         _violation(
-                            "github.actions.allow_list_missing",
-                            f"allow_list entries missing from selected_actions.patterns: {missing}",
-                            endpoint="actions_permissions",
+                            "github.actions.patterns",
+                            "selected_actions.patterns_allowed must be a list",
+                            endpoint="selected_actions",
                         )
                     )
-                if extra:
-                    violations.append(
-                        _violation(
-                            "github.actions.allow_list_extra",
-                            f"selected_actions.patterns contains entries not in allow_list: {extra}",
-                            endpoint="actions_permissions",
+                else:
+                    missing = sorted(set(allow_list) - set(patterns))
+                    extra = sorted(set(patterns) - set(allow_list))
+                    if missing:
+                        violations.append(
+                            _violation(
+                                "github.actions.allow_list_missing",
+                                f"allow_list entries missing from selected_actions.patterns_allowed: {missing}",
+                                endpoint="selected_actions",
+                            )
                         )
-                    )
+                    if extra:
+                        violations.append(
+                            _violation(
+                                "github.actions.allow_list_extra",
+                                f"selected_actions.patterns_allowed contains entries not in allow_list: {extra}",
+                                endpoint="selected_actions",
+                            )
+                        )
 
     workflow = _find_endpoint(plan, "workflow_permissions")
     if workflow is None:

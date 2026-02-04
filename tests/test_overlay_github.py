@@ -16,7 +16,12 @@ def test_overlay_flags_missing_allow_list_entries(tmp_path):
                 "want": {
                     "allowed_actions": "selected",
                     "sha_pinning_required": True,
-                    "selected_actions": {"patterns": []},
+                },
+            },
+            {
+                "name": "selected_actions",
+                "want": {
+                    "patterns_allowed": [],
                 },
             },
             {

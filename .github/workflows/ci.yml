@@ -42,7 +42,10 @@ jobs:
           RESTSYNC_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p artifacts/plan_runs
-          .venv/bin/restsync check --config configs/restsync.yml --output artifacts/plan_runs/plan.json
+          .venv/bin/restsync check \
+            --config configs/restsync.yml \
+            --baseline baselines/overlay_baseline.json \
+            --output artifacts/plan_runs/plan.json
       - name: Tests
         run: |
           mkdir -p artifacts/test_runs

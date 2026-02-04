@@ -11,4 +11,8 @@ def test_load_spec_from_repo_config():
     assert spec.repo.owner == "mikemol"
     assert spec.repo.name == "restsync"
     assert spec.endpoints
-    assert {e.name for e in spec.endpoints} == {"actions_permissions", "workflow_permissions"}
+    assert {e.name for e in spec.endpoints} == {
+        "actions_permissions",
+        "selected_actions",
+        "workflow_permissions",
+    }
