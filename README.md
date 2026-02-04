@@ -1,5 +1,5 @@
 ---
-doc_revision: 5
+doc_revision: 6
 reader_reintern: "Reader-only: re-intern if doc_revision changed since you last read this doc."
 doc_id: readme
 doc_role: readme
@@ -18,7 +18,7 @@ doc_reviewed_as_of:
   POLICY_SEED.md: 1
   glossary.md: 1
   AGENTS.md: 1
-  CONTRIBUTING.md: 5
+  CONTRIBUTING.md: 6
 doc_change_protocol: "POLICY_SEED.md §6"
 doc_erasure:
   - formatting
@@ -77,6 +77,8 @@ Generate a read-only plan:
 ```
 restsync plan --config configs/restsync.yml
 ```
+By default, auth is `gh` (uses `gh auth token`). In CI or headless contexts,
+set `RESTSYNC_TOKEN` (or `GITHUB_TOKEN`) to supply a token explicitly.
 
 Generate a timestamped plan artifact:
 ```

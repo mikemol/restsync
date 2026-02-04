@@ -36,10 +36,13 @@ def _token_from_env() -> str:
 
 def get_token(auth: AuthSpec) -> Optional[str]:
     mode = auth.mode.strip().lower()
+    if mode in {"none", ""}:
+        return None
+    env_token = os.environ.get("RESTSYNC_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if env_token:
+        return env_token.strip()
     if mode == "gh":
         return _token_from_gh()
     if mode in {"env", "token"}:
         return _token_from_env()
-    if mode in {"none", ""}:
-        return None
     raise AuthError(f"unsupported auth mode: {auth.mode}")

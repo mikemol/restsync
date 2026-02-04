@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   audit:
@@ -36,6 +37,12 @@ jobs:
         run: .venv/bin/python scripts/policy_check.py --workflows
       - name: Docflow audit
         run: .venv/bin/python -m gabion docflow-audit --root . --fail-on-violations
+      - name: Generate plan (read-only)
+        env:
+          RESTSYNC_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p artifacts/plan_runs
+          .venv/bin/restsync plan --config configs/restsync.yml --output artifacts/plan_runs/plan.json
       - name: Tests
         run: |
           mkdir -p artifacts/test_runs
@@ -49,3 +56,9 @@ jobs:
         with:
           name: test-runs
           path: artifacts/test_runs
+      - name: Upload plan artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: plan-runs
+          path: artifacts/plan_runs

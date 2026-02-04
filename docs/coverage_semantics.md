@@ -19,8 +19,8 @@ doc_requires:
 doc_reviewed_as_of:
   POLICY_SEED.md: 1
   glossary.md: 1
-  README.md: 5
-  CONTRIBUTING.md: 5
+  README.md: 6
+  CONTRIBUTING.md: 6
   AGENTS.md: 1
 doc_change_protocol: "POLICY_SEED.md §6"
 doc_invariants:
